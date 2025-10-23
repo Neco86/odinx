@@ -3,10 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>即将上线</title>
+    <title>个人照片展示</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .section-title {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .photo-card {
+            transition: transform 0.3s ease;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .blog-card {
+            transition: all 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-x-hidden">
+    <!-- 背景装饰元素 -->
     <svg class="absolute top-10 left-10 w-24 h-24 text-blue-200 opacity-60" viewBox="0 0 100 100" fill="currentColor">
         <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" fill="none"/>
         <circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -21,20 +75,144 @@
     <svg class="absolute bottom-1/3 left-1/4 w-20 h-20 text-cyan-200 opacity-60" viewBox="0 0 100 100" fill="currentColor">
         <path d="M50,5 L95,50 L50,95 L5,50 Z" stroke="currentColor" stroke-width="2" fill="none"/>
     </svg>
-    <div class="text-center z-10 px-4">
-        <h1 class="text-5xl md:text-7xl font-light text-gray-800 mb-4 tracking-wider">COMING SOON</h1>
-        <p class="text-lg md:text-xl text-gray-600 mt-8 max-w-md mx-auto">我们正在努力建设中，即将与您见面</p>
-    </div>
 
-    <div class="absolute bottom-8 text-center w-full">
-        <p class="text-gray-500 text-sm">© <span id="year">2025</span> xx 版权所有</p>
-        <p class="text-gray-500 text-sm mt-1">
-            <a href="https://beian.miit.gov.cn/" class="hover:text-gray-700 transition-colors">京ICP备x号</a>
-        </p>
-        <p class="text-gray-500 text-sm mt-1">
-            <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=x" class="hover:text-gray-700 transition-colors">京公网安备x号</a>
-        </p>
-    </div>
+    <section id="gallery" class="py-16 bg-white/50 backdrop-blur-sm">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">摄影作品集</h2>
+            <p class="text-gray-600 text-center max-w-2xl mx-auto mb-10">精选自然风光、城市景观与人文纪实摄影作品，每一张照片都承载着一个独特的故事</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="photo-card overflow-hidden rounded-lg shadow-md bg-white">
+                    <div class="relative overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 h-64 flex items-center justify-center">
+                        <svg class="w-24 h-24 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center">
+                            <button class="text-white opacity-0 hover:opacity-100 transform translate-y-4 hover:translate-y-0 transition duration-300">
+                                <i class="fas fa-expand text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1 text-gray-800">山间晨曦</h3>
+                        <p class="text-gray-600 text-sm">黄山 | 2025年5月</p>
+                    </div>
+                </div>
+
+                <div class="photo-card overflow-hidden rounded-lg shadow-md bg-white">
+                    <div class="relative overflow-hidden bg-gradient-to-br from-amber-400 to-red-500 h-64 flex items-center justify-center">
+                        <svg class="w-24 h-24 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center">
+                            <button class="text-white opacity-0 hover:opacity-100 transform translate-y-4 hover:translate-y-0 transition duration-300">
+                                <i class="fas fa-expand text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1 text-gray-800">城市之光</h3>
+                        <p class="text-gray-600 text-sm">上海 | 2025年3月</p>
+                    </div>
+                </div>
+
+                <div class="photo-card overflow-hidden rounded-lg shadow-md bg-white">
+                    <div class="relative overflow-hidden bg-gradient-to-br from-green-400 to-blue-500 h-64 flex items-center justify-center">
+                        <svg class="w-24 h-24 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition duration-300 flex items-center justify-center">
+                            <button class="text-white opacity-0 hover:opacity-100 transform translate-y-4 hover:translate-y-0 transition duration-300">
+                                <i class="fas fa-expand text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1 text-gray-800">森林秘境</h3>
+                        <p class="text-gray-600 text-sm">九寨沟 | 2025年8月</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog" class="py-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">摄影技巧与心得</h2>
+            <p class="text-gray-600 text-center max-w-2xl mx-auto mb-10">分享摄影技术、后期处理技巧与旅途中的拍摄故事</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <article class="blog-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative bg-gradient-to-r from-blue-400 to-blue-600 h-48 flex items-center justify-center">
+                        <i class="fas fa-water text-white text-6xl opacity-80"></i>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded">技术教程</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">长曝光摄影完全指南</h3>
+                        <p class="text-gray-600 mb-4">学习如何使用长曝光技术拍摄流水、车流和星空，创造梦幻般的视觉效果。</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <span><i class="far fa-calendar mr-1"></i>2025年6月15日</span>
+                            <span><i class="far fa-clock mr-1"></i>8分钟阅读</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="blog-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative bg-gradient-to-r from-amber-400 to-amber-600 h-48 flex items-center justify-center">
+                        <i class="fas fa-user text-white text-6xl opacity-80"></i>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded">人像摄影</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">自然光人像摄影技巧</h3>
+                        <p class="text-gray-600 mb-4">探索如何利用自然光拍摄生动自然的人像照片，无需复杂设备也能拍出专业效果。</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <span><i class="far fa-calendar mr-1"></i>2025年5月22日</span>
+                            <span><i class="far fa-clock mr-1"></i>6分钟阅读</span>
+                        </div>
+                    </div>
+                </article>
+                <article class="blog-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative bg-gradient-to-r from-green-400 to-green-600 h-48 flex items-center justify-center">
+                        <i class="fas fa-mountain text-white text-6xl opacity-80"></i>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">风景摄影</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">风景摄影构图技巧</h3>
+                        <p class="text-gray-600 mb-4">掌握黄金分割、引导线和前景运用等构图技巧，让你的风景照片更具视觉冲击力。</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <span><i class="far fa-calendar mr-1"></i>2025年4月30日</span>
+                            <span><i class="far fa-clock mr-1"></i>10分钟阅读</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-8 relative">
+        <div class="container mx-auto px-4 text-center">
+            <div class="pt-4 text-center text-gray-400">
+                <p class="text-gray-500 text-sm mt-1">
+                    &copy; <span id="year">2025</span> 个人照片展示 版权所有
+                </p>
+                <p class="text-gray-500 text-sm mt-1">
+                    <a href="https://beian.miit.gov.cn/" class="hover:text-gray-300 transition-colors">京ICP备x号</a>
+                </p>
+                <p class="text-gray-500 text-sm mt-1">
+                    <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=x" class="hover:text-gray-300 transition-colors">京公网安备x号</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
     <script>
         const year = document.getElementById('year');
         year.textContent = new Date().getFullYear();
