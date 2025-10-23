@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>即将上线</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
+    <svg class="absolute top-10 left-10 w-24 h-24 text-blue-200 opacity-60" viewBox="0 0 100 100" fill="currentColor">
+        <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2" fill="none"/>
+        <circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="2" fill="none"/>
+        <circle cx="50" cy="50" r="15" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <svg class="absolute bottom-20 right-10 w-32 h-32 text-indigo-200 opacity-70" viewBox="0 0 100 100" fill="currentColor">
+        <polygon points="50,5 95,35 95,75 50,95 5,75 5,35" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <svg class="absolute top-1/3 right-1/4 w-16 h-16 text-purple-200 opacity-50" viewBox="0 0 100 100" fill="currentColor">
+        <rect x="25" y="25" width="50" height="50" rx="10" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <svg class="absolute bottom-1/3 left-1/4 w-20 h-20 text-cyan-200 opacity-60" viewBox="0 0 100 100" fill="currentColor">
+        <path d="M50,5 L95,50 L50,95 L5,50 Z" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+    <div class="text-center z-10 px-4">
+        <h1 class="text-5xl md:text-7xl font-light text-gray-800 mb-4 tracking-wider">COMING SOON</h1>
+        <p class="text-lg md:text-xl text-gray-600 mt-8 max-w-md mx-auto">我们正在努力建设中，即将与您见面</p>
+    </div>
+
+    <div class="absolute bottom-8 text-center w-full">
+        <p class="text-gray-500 text-sm">© <span id="year">2025</span> xx 版权所有</p>
+        <p class="text-gray-500 text-sm mt-1">
+            <a href="https://beian.miit.gov.cn/" class="hover:text-gray-700 transition-colors">京ICP备x号</a>
+        </p>
+        <p class="text-gray-500 text-sm mt-1">
+            <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=x" class="hover:text-gray-700 transition-colors">京公网安备x号</a>
+        </p>
+    </div>
+    <script>
+        const year = document.getElementById('year');
+        year.textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
