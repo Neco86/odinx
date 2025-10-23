@@ -2,16 +2,5 @@
     "name": "odinx-proxy",
     "version": "1.0.0",
     "description": "odinx proxy",
-    "main": "api/proxy.js",
-    "scripts": {
-        "dev": "vercel dev",
-        "deploy": "vercel deploy --prod"
-    },
-    "dependencies": {
-        "http-proxy-middleware": "^2.0.6"
-    },
-    "engines": {
-        "node": ">=18.x"
-    },
     "license": "MIT"
 }
