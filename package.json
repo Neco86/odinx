@@ -1,6 +1,5 @@
 {
-    "name": "odinx-proxy",
+    "name": "odinx",
     "version": "1.0.0",
-    "description": "odinx proxy",
-    "license": "MIT"
+    "description": "odinx"
 }
