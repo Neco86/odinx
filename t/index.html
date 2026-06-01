@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>鸡兔同笼 - 动画演示</title>
+    <script src="./gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
+            touch-action: none; user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* === 场景 === */
+        .scene {
+            width: 100%; height: 100%;
+            position: relative;
+            background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 40%, #98D8A0 60%, #5DAE5F 65%, #4A9E4A 100%);
+            overflow: hidden;
+        }
+
+        /* 天空装饰 */
+        .sun {
+            position: absolute;
+            top: 8%; right: 12%;
+            width: 70px; height: 70px;
+            background: radial-gradient(circle, #FFE87C 30%, #FFD700 70%, transparent 72%);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255,215,0,0.5), 0 0 80px rgba(255,215,0,0.2);
+            animation: sunPulse 3s ease-in-out infinite;
+        }
+        @keyframes sunPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255,215,0,0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(255,215,0,0.7); }
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.9;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .cloud::before, .cloud::after {
+            content: ''; position: absolute;
+            background: white; border-radius: 50%;
+        }
+        .cloud-1 { width: 100px; height: 35px; top: 10%; left: 10%; animation: cloudFloat 20s linear infinite; }
+        .cloud-1::before { width: 45px; height: 45px; top: -20px; left: 15px; }
+        .cloud-1::after { width: 55px; height: 50px; top: -25px; left: 40px; }
+        .cloud-2 { width: 130px; height: 40px; top: 18%; left: 55%; animation: cloudFloat 25s linear infinite 5s; }
+        .cloud-2::before { width: 55px; height: 50px; top: -22px; left: 20px; }
+        .cloud-2::after { width: 65px; height: 55px; top: -30px; left: 55px; }
+        .cloud-3 { width: 80px; height: 28px; top: 6%; left: 35%; animation: cloudFloat 18s linear infinite 10s; }
+        .cloud-3::before { width: 35px; height: 35px; top: -15px; left: 10px; }
+        .cloud-3::after { width: 45px; height: 40px; top: -20px; left: 30px; }
+        @keyframes cloudFloat {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100vw); }
+        }
+
+        /* 草地 */
+        .ground {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 42%;
+            background: linear-gradient(180deg, #5DAE5F 0%, #4A9E4A 30%, #3D8B3D 100%);
+            border-radius: 50% 50% 0 0 / 12% 12% 0 0;
+        }
+        .ground::before {
+            content: '';
+            position: absolute;
+            top: -8px; left: 0; right: 0;
+            height: 20px;
+            background: repeating-linear-gradient(90deg, transparent, transparent 8px, #6BC06B 8px, #6BC06B 10px);
+            opacity: 0.4;
+        }
+
+        /* 小草装饰 */
+        .grass-decor {
+            position: absolute;
+            width: 20px; height: 30px;
+            border-left: 3px solid #4CAF50;
+            border-radius: 0 0 0 80%;
+            transform-origin: bottom center;
+            animation: grassSway 2.5s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .grass-decor::before {
+            content: '';
+            position: absolute;
+            left: -3px; top: 8px;
+            width: 16px; height: 22px;
+            border-right: 3px solid #66BB6A;
+            border-radius: 0 80% 0 0;
+        }
+        .g1 { bottom: 34%; left: 6%; animation-delay: 0s; }
+        .g2 { bottom: 33%; right: 8%; animation-delay: 0.8s; }
+        .g3 { bottom: 35%; left: 50%; animation-delay: 1.6s; }
+        @keyframes grassSway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+
+        /* 小花装饰 */
+        .flower-decor {
+            position: absolute;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FFD700 30%, #FF6B6B 32%, #FF6B6B 100%);
+            animation: flowerBob 3s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .flower-decor::before {
+            content: '';
+            position: absolute;
+            top: 14px; left: 5px;
+            width: 3px; height: 16px;
+            background: #4CAF50;
+            border-radius: 2px;
+        }
+        .f1 { bottom: 36%; left: 15%; }
+        .f2 { bottom: 37%; right: 18%; animation-delay: 1.5s; }
+        @keyframes flowerBob {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(5deg); }
+        }
+
+        /* 栅栏 */
+        .fence {
+            position: absolute;
+            top: 44%; left: 5%; right: 5%;
+            transform: translateY(0%);
+            height: 60px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 12px;
+        }
+        .fence-post {
+            width: 14px; height: 55px;
+            background: linear-gradient(90deg, #D4A76A 0%, #C4975A 50%, #B8894E 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            box-shadow: 1px 2px 3px rgba(0,0,0,0.2);
+        }
+        .fence-post::before {
+            content: '';
+            position: absolute; top: -8px; left: 50%;
+            transform: translateX(-50%);
+            width: 18px; height: 10px;
+            background: #D4A76A;
+            border-radius: 5px 5px 0 0;
+        }
+        .fence-rail {
+            position: absolute;
+            left: 0; right: 0;
+            height: 8px;
+            background: linear-gradient(180deg, #D4A76A, #C4975A);
+            border-radius: 3px;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+        }
+        .fence-rail-1 { top: 10px; }
+        .fence-rail-2 { top: 32px; }
+
+        /* === 动物舞台 === */
+        .stage {
+            position: absolute;
+            top: 45%; left: 3%; right: 3%;
+            transform: translateY(-20%);
+            height: 30%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 0 10px;
+            align-content: flex-end;
+            z-index: 10;
+        }
+        @media (max-width: 480px) {
+            .stage { height: 28%; gap: 3px; left: 2%; right: 2%; }
+        }
+        @media (max-height: 500px) {
+            .stage { height: 30%; }
+        }
+
+        /* === 动物角色 === */
+        .animal-char {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            transform-origin: bottom center;
+        }
+        .animal-char svg {
+            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.2));
+            width: 54px;
+            height: 65px;
+        }
+        @media (max-width: 480px) {
+            .animal-char svg { width: 42px; height: 50px; }
+        }
+        @media (max-width: 360px) {
+            .animal-char svg { width: 34px; height: 42px; }
+        }
+        .chicken-char { animation: chickenIdle 2s ease-in-out infinite; }
+        .rabbit-char { animation: rabbitIdle 2.5s ease-in-out infinite; }
+        @keyframes chickenIdle {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-2deg); }
+        }
+        @keyframes rabbitIdle {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.03); }
+        }
+        .question-char {
+            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.2));
+        }
+        .question-char svg {
+            width: 54px; height: 65px;
+        }
+        @media (max-width: 480px) {
+            .question-char svg { width: 42px; height: 50px; }
+        }
+        @media (max-width: 360px) {
+            .question-char svg { width: 34px; height: 42px; }
+        }
+
+        /* === 对话气泡 === */
+        .bubble-container {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .speech-bubble {
+            position: absolute;
+            background: white;
+            border-radius: 18px;
+            border: 3px solid #F0E6D3;
+            padding: 16px 20px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #333;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.12), inset 0 -2px 0 rgba(0,0,0,0.03);
+            opacity: 0;
+            transform: scale(0.8);
+            max-width: min(92%, 540px);
+            width: max-content;
+            text-align: center;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        .speech-bubble::after { display: none; }
+        .speech-bubble.top-bubble {
+            top: calc(90px + env(safe-area-inset-top, 0px)); left: 50%;
+            transform: translateX(-50%) scale(0.8);
+        }
+        .speech-bubble.top-bubble.show {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+        .speech-bubble.center-bubble {
+            top: calc(90px + env(safe-area-inset-top, 0px)); left: 50%;
+            transform: translateX(-50%) scale(0.8);
+        }
+        .speech-bubble.center-bubble.show {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+        .speech-bubble .highlight { color: #E74C3C; font-weight: bold; }
+        .speech-bubble .accent { color: #2ECC71; font-weight: bold; }
+        .speech-bubble .formula {
+            font-family: 'Courier New', monospace;
+            background: #f0f7ff;
+            padding: 4px 8px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 3px 0;
+            color: #2C3E50;
+            font-weight: bold;
+            font-size: 1rem;
+            word-break: keep-all;
+        }
+        .speech-bubble .title-text {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #E67E22;
+            text-shadow: 0 2px 0 rgba(0,0,0,0.05);
+            letter-spacing: 2px;
+        }
+        .speech-bubble .sub-text {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        /* 移动端气泡调整 */
+        @media (max-width: 480px) {
+            .speech-bubble {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+                line-height: 1.6;
+                border-radius: 14px;
+                max-width: 92%;
+            }
+            .speech-bubble .title-text { font-size: 1.2rem; }
+            .speech-bubble .formula { font-size: 0.9rem; padding: 3px 6px; }
+            .speech-bubble .sub-text { font-size: 0.85rem; }
+            .speech-bubble.top-bubble { top: calc(80px + env(safe-area-inset-top, 0px)); }
+            .speech-bubble.center-bubble { top: calc(80px + env(safe-area-inset-top, 0px)); }
+        }
+        @media (max-width: 360px) {
+            .speech-bubble { font-size: 0.9rem; padding: 10px 12px; }
+            .speech-bubble .title-text { font-size: 1.1rem; }
+        }
+        /* 横屏 */
+        @media (max-height: 500px) {
+            .speech-bubble { padding: 10px 14px; font-size: 0.85rem; }
+            .speech-bubble.top-bubble { top: calc(60px + env(safe-area-inset-top, 0px)); }
+            .speech-bubble.center-bubble { top: calc(60px + env(safe-area-inset-top, 0px)); }
+            .speech-bubble .title-text { font-size: 1.1rem; }
+        }
+
+        /* === 烟雾效果 === */
+        .poof {
+            position: absolute;
+            pointer-events: none;
+            z-index: 60;
+        }
+        .poof-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            opacity: 0;
+        }
+
+        /* === 浮动数字 === */
+        .float-num {
+            position: absolute;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #E74C3C;
+            pointer-events: none;
+            z-index: 70;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* === HUD 控制 === */
+        .game-hud {
+            position: fixed;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 10px;
+            align-items: center;
+            z-index: 200;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 3px solid #E8DCC8;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.08), 0 8px 25px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            white-space: nowrap;
+        }
+        .game-hud.hidden { opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+        .hud-item {
+            display: flex; align-items: center; gap: 6px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .hud-item label { font-size: 13px; color: #666; white-space: nowrap; flex-shrink: 0; }
+        .hud-item .num { font-size: 20px; font-weight: bold; color: #2C3E50; min-width: 28px; text-align: center; }
+        .hud-item .adj {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            border: 2px solid #D4C8B8;
+            background: linear-gradient(180deg, #FFF 0%, #F0EAE0 100%);
+            color: #555;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+        }
+        .hud-item .adj:active { transform: translateY(2px); box-shadow: none; background: #EDE6DC; }
+        .play-btn {
+            padding: 10px 24px;
+            border: 3px solid #CC4422;
+            border-radius: 25px;
+            background: linear-gradient(180deg, #FF7B5B 0%, #ee5a24 100%);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #B84420, 0 6px 15px rgba(255,107,107,0.3);
+            transition: all 0.1s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+        .play-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B84420, 0 2px 6px rgba(255,107,107,0.3); }
+        .play-btn:disabled { opacity: 0.5; animation: none; }
+        @keyframes btnPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .play-btn:not(:disabled) { animation: btnPulse 2s ease-in-out infinite; }
+
+        .reset-hud {
+            position: fixed;
+            top: calc(16px + env(safe-area-inset-top, 0px));
+            right: 16px;
+            z-index: 200;
+            display: none;
+        }
+        .reset-btn {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 2px solid #C4B8A8;
+            background: linear-gradient(180deg, #FFF 0%, #F5EEE6 100%);
+            color: #666;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .reset-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+
+        /* === 静音按钮 === */
+        .mute-hud {
+            position: fixed;
+            top: calc(16px + env(safe-area-inset-top, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+        }
+        .mute-btn {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 2px solid #C4B8A8;
+            background: linear-gradient(180deg, #FFF 0%, #F5EEE6 100%);
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.08);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mute-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+
+        /* === 脚数指示器 === */
+        .legs-hud {
+            position: fixed;
+            top: calc(16px + env(safe-area-inset-top, 0px));
+            left: 16px;
+            z-index: 200;
+            background: linear-gradient(180deg, #FFF 0%, #F5EEE6 100%);
+            border: 2px solid #E8DCC8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06);
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            display: none;
+        }
+        .legs-hud .legs-val { font-weight: bold; color: #E74C3C; font-size: 18px; }
+        .legs-hud .legs-target { color: #999; }
+
+        /* === 庆祝 === */
+        .confetti-layer {
+            position: fixed; inset: 0;
+            pointer-events: none;
+            z-index: 300;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px; height: 6px;
+            border-radius: 2px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .game-hud { padding: 8px 12px; gap: 6px; }
+            .hud-item { gap: 4px; }
+            .hud-item label { font-size: 12px; }
+            .hud-item .num { font-size: 16px; min-width: 22px; }
+            .hud-item .adj { width: 28px; height: 28px; font-size: 15px; }
+            .play-btn { padding: 8px 14px; font-size: 13px; }
+            .sun { width: 50px; height: 50px; }
+            .fence { height: 45px; }
+            .fence-post { width: 10px; height: 40px; }
+        }
+        @media (max-width: 360px) {
+            .game-hud { padding: 6px 10px; gap: 4px; }
+            .hud-item { gap: 3px; }
+            .hud-item label { font-size: 11px; }
+            .hud-item .num { font-size: 15px; min-width: 20px; }
+            .hud-item .adj { width: 26px; height: 26px; font-size: 14px; }
+            .play-btn { padding: 6px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="scene" id="scene">
+    <!-- 天空 -->
+    <div class="sun"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+
+    <!-- 地面 -->
+    <div class="ground"></div>
+
+    <!-- 栅栏 -->
+    <div class="fence" id="fence">
+        <div class="fence-rail fence-rail-1"></div>
+        <div class="fence-rail fence-rail-2"></div>
+    </div>
+
+    <!-- 动物舞台 -->
+    <div class="stage" id="stage"></div>
+
+    <!-- 小草装饰 -->
+    <div class="grass-decor g1"></div>
+    <div class="grass-decor g2"></div>
+    <div class="grass-decor g3"></div>
+    <div class="flower-decor f1"></div>
+    <div class="flower-decor f2"></div>
+
+    <!-- 气泡容器 -->
+    <div class="bubble-container" id="bubbles"></div>
+</div>
+
+<!-- HUD -->
+<div class="game-hud" id="game-hud">
+    <div class="hud-item">
+        <label>头数</label>
+        <button class="adj" id="h-minus">−</button>
+        <span class="num" id="h-val">10</span>
+        <button class="adj" id="h-plus">+</button>
+    </div>
+    <div class="hud-item">
+        <label>脚数</label>
+        <button class="adj" id="l-minus">−</button>
+        <span class="num" id="l-val">28</span>
+        <button class="adj" id="l-plus">+</button>
+    </div>
+    <button class="play-btn" id="play-btn">开始挑战</button>
+</div>
+
+<div class="reset-hud" id="reset-hud">
+    <button class="reset-btn" id="reset-btn">再来一次</button>
+</div>
+
+<div class="mute-hud" id="mute-hud">
+    <button class="mute-btn" id="mute-btn">
+        <svg id="mute-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path id="mute-waves" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/>
+        </svg>
+    </button>
+</div>
+
+<div class="legs-hud" id="legs-hud">
+    脚数 <span class="legs-val" id="legs-cur">0</span> / <span class="legs-target" id="legs-tgt">28</span>
+</div>
+
+<div class="confetti-layer" id="confetti"></div>
+
+<script>
+// ============================================================
+// === 音频系统 ===
+// ============================================================
+const AudioManager = (() => {
+    let ctx = null;
+    let isMuted = false;
+    let bgmGain = null;
+    let bgmOscillators = [];
+    let currentNarration = null; // 当前播放的旁白 Audio 元素
+
+    // 预录音频文件映射
+    const audioFiles = {
+        '01_title': 'audio/01_title.mp3',
+        '02_question': 'audio/02_question.mp3',
+        '03_assume': 'audio/03_assume.mp3',
+        '04_count': 'audio/04_count.mp3',
+        '05_reason': 'audio/05_reason.mp3',
+        '06_transform': 'audio/06_transform.mp3',
+        '07_result': 'audio/07_result.mp3',
+        '08_verify': 'audio/08_verify.mp3',
+        '09_summary': 'audio/09_summary.mp3'
+    };
+    const audioCache = {}; // 预加载缓存
+
+    function init() {
+        if (ctx) return;
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        // 预加载所有旁白音频
+        preloadAudio();
+    }
+
+    function preloadAudio() {
+        Object.entries(audioFiles).forEach(([key, src]) => {
+            const audio = new Audio();
+            audio.preload = 'auto';
+            audio.src = src;
+            audioCache[key] = audio;
+        });
+    }
+
+    function getMuted() { return isMuted; }
+    function toggleMute() {
+        isMuted = !isMuted;
+        if (isMuted) {
+            if (currentNarration) { currentNarration.pause(); currentNarration = null; }
+            stopBGM();
+        }
+        const waves = document.getElementById('mute-waves');
+        if (isMuted) {
+            waves.setAttribute('d', '');
+            waves.parentElement.insertAdjacentHTML('beforeend', '<line id="mute-x" x1="18" y1="6" x2="22" y2="18" stroke="#E74C3C" stroke-width="2.5"/>');
+        } else {
+            waves.setAttribute('d', 'M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14');
+            const x = document.getElementById('mute-x');
+            if (x) x.remove();
+        }
+    }
+
+    // --- 音效合成 ---
+    function playSfx(type) {
+        if (isMuted || !ctx) return;
+        if (ctx.state === 'suspended') ctx.resume();
+        switch(type) {
+            case 'pop': playPop(); break;
+            case 'whoosh': playWhoosh(); break;
+            case 'ding': playDing(); break;
+            case 'click': playClick(); break;
+            case 'tada': playTada(); break;
+        }
+    }
+
+    function playPop() {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.12);
+    }
+
+    function playWhoosh() {
+        const bufferSize = ctx.sampleRate * 0.2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1);
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1000, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.2);
+        filter.Q.value = 2;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        src.connect(filter).connect(gain).connect(ctx.destination);
+        src.start(); src.stop(ctx.currentTime + 0.25);
+    }
+
+    function playDing() {
+        [880, 1320].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.05);
+            osc.stop(ctx.currentTime + 0.35);
+        });
+    }
+
+    function playClick() {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 1000;
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.025);
+    }
+
+    function playTada() {
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
+            gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + i * 0.12 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.12);
+            osc.stop(ctx.currentTime + i * 0.12 + 0.4);
+        });
+    }
+
+    // --- 背景音乐 (简易五声音阶旋律) ---
+    function startBGM() {
+        if (isMuted || !ctx) return;
+        if (bgmOscillators.length) return; // already playing
+        if (ctx.state === 'suspended') ctx.resume();
+        bgmGain = ctx.createGain();
+        bgmGain.gain.value = 0.2;
+        bgmGain.connect(ctx.destination);
+
+        // 五声音阶旋律 (C D E G A) - 轻快活泼
+        const melody = [523, 587, 659, 784, 880, 784, 659, 587, 523, 659, 784, 880, 1047, 880, 784, 659];
+        const noteDur = 0.35;
+
+        function playLoop() {
+            if (isMuted || !bgmGain) return;
+            const now = ctx.currentTime;
+            melody.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const noteGain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                const startTime = now + i * noteDur;
+                noteGain.gain.setValueAtTime(0.25, startTime);
+                noteGain.gain.setValueAtTime(0.12, startTime + noteDur * 0.6);
+                noteGain.gain.linearRampToValueAtTime(0.001, startTime + noteDur * 0.95);
+                osc.connect(noteGain).connect(bgmGain);
+                osc.start(startTime);
+                osc.stop(startTime + noteDur);
+                bgmOscillators.push(osc);
+            });
+            // Schedule next loop
+            const loopDur = melody.length * noteDur;
+            bgmLoopTimer = setTimeout(playLoop, loopDur * 1000 - 100);
+        }
+        playLoop();
+    }
+
+    let bgmLoopTimer = null;
+    function stopBGM() {
+        if (bgmLoopTimer) { clearTimeout(bgmLoopTimer); bgmLoopTimer = null; }
+        bgmOscillators.forEach(o => { try { o.stop(); } catch(e){} });
+        bgmOscillators = [];
+        if (bgmGain) { bgmGain.disconnect(); bgmGain = null; }
+    }
+
+    function duckBGM(duck = true) {
+        if (!bgmGain) return;
+        bgmGain.gain.linearRampToValueAtTime(duck ? 0.05 : 0.2, ctx.currentTime + 0.2);
+    }
+
+    // --- 旁白播放（预录音频） ---
+    function speak(key) {
+        return new Promise((resolve) => {
+            if (isMuted) { resolve(); return; }
+            const audio = audioCache[key];
+            if (!audio) { resolve(); return; }
+            if (currentNarration) { currentNarration.pause(); currentNarration.currentTime = 0; }
+            audio.currentTime = 0;
+            currentNarration = audio;
+            duckBGM(true);
+            const done = () => { currentNarration = null; duckBGM(false); resolve(); };
+            audio.onended = done;
+            audio.onerror = done;
+            audio.play().catch(done);
+        });
+    }
+
+    function stopNarration() {
+        if (currentNarration) { currentNarration.pause(); currentNarration.currentTime = 0; currentNarration = null; }
+        duckBGM(false);
+    }
+
+    return { init, toggleMute, getMuted, playSfx, speak, startBGM, stopBGM, stopNarration };
+})();
+
+// 静音按钮
+document.getElementById('mute-btn').onclick = () => {
+    AudioManager.init();
+    AudioManager.toggleMute();
+};
+
+// === 角色 SVG ===
+const CHICKEN_SVG = `<svg width="50" height="60" viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- 身体 -->
+  <ellipse cx="25" cy="38" rx="16" ry="14" fill="#FFDB4D"/>
+  <ellipse cx="25" cy="38" rx="14" ry="12" fill="#FFE066"/>
+  <!-- 翅膀 -->
+  <ellipse cx="12" cy="37" rx="7" ry="9" fill="#F0C030" opacity="0.9"/>
+  <!-- 头 -->
+  <circle cx="25" cy="20" r="11" fill="#FFDB4D"/>
+  <circle cx="25" cy="20" r="9.5" fill="#FFE680"/>
+  <!-- 鸡冠 -->
+  <path d="M20,10 Q22,4 24,10 Q26,4 28,10" fill="#FF4444" stroke="#E03030" stroke-width="0.5"/>
+  <!-- 眼睛 -->
+  <ellipse cx="29" cy="18" rx="3" ry="3.5" fill="white"/>
+  <circle cx="30" cy="18.5" r="2" fill="#333"/>
+  <circle cx="30.5" cy="17.5" r="0.8" fill="white"/>
+  <!-- 腮红 -->
+  <ellipse cx="32" cy="23" rx="3" ry="2" fill="#FFB3B3" opacity="0.6"/>
+  <!-- 嘴 -->
+  <path d="M36,20 L42,22 L36,24 Z" fill="#FF8C00"/>
+  <!-- 脚 -->
+  <line x1="20" y1="51" x2="20" y2="58" stroke="#FF8C00" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="30" y1="51" x2="30" y2="58" stroke="#FF8C00" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M16,58 L20,58 L23,56" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round"/>
+  <path d="M27,56 L30,58 L34,58" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
+
+const RABBIT_SVG = `<svg width="42" height="60" viewBox="0 0 42 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- 耳朵 -->
+  <ellipse cx="14" cy="10" rx="5" ry="13" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="0.5"/>
+  <ellipse cx="14" cy="10" rx="3" ry="9" fill="#FFB6C1"/>
+  <ellipse cx="28" cy="10" rx="5" ry="13" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="0.5"/>
+  <ellipse cx="28" cy="10" rx="3" ry="9" fill="#FFB6C1"/>
+  <!-- 身体 -->
+  <ellipse cx="21" cy="40" rx="14" ry="15" fill="#F8F8F8"/>
+  <ellipse cx="21" cy="40" rx="12" ry="13" fill="white"/>
+  <!-- 尾巴 -->
+  <circle cx="35" cy="42" r="5" fill="white" stroke="#F0F0F0" stroke-width="0.5"/>
+  <!-- 头 -->
+  <circle cx="21" cy="24" r="12" fill="#F8F8F8"/>
+  <circle cx="21" cy="24" r="10.5" fill="white"/>
+  <!-- 眼睛 -->
+  <ellipse cx="16" cy="22" rx="3.5" ry="4" fill="white" stroke="#eee" stroke-width="0.5"/>
+  <circle cx="16.5" cy="22.5" r="2.5" fill="#C0392B"/>
+  <circle cx="17" cy="21.5" r="1" fill="white"/>
+  <ellipse cx="26" cy="22" rx="3.5" ry="4" fill="white" stroke="#eee" stroke-width="0.5"/>
+  <circle cx="26.5" cy="22.5" r="2.5" fill="#C0392B"/>
+  <circle cx="27" cy="21.5" r="1" fill="white"/>
+  <!-- 腮红 -->
+  <ellipse cx="12" cy="27" rx="3" ry="2" fill="#FFB3B3" opacity="0.5"/>
+  <ellipse cx="30" cy="27" rx="3" ry="2" fill="#FFB3B3" opacity="0.5"/>
+  <!-- 鼻子 -->
+  <ellipse cx="21" cy="28" rx="2.5" ry="2" fill="#FFB6C1"/>
+  <!-- 嘴 -->
+  <path d="M19,30 Q21,32 23,30" fill="none" stroke="#D4A0A0" stroke-width="0.8"/>
+  <!-- 胡须 -->
+  <line x1="10" y1="26" x2="17" y2="27" stroke="#DDD" stroke-width="0.6"/>
+  <line x1="10" y1="29" x2="17" y2="29" stroke="#DDD" stroke-width="0.6"/>
+  <line x1="25" y1="27" x2="32" y2="26" stroke="#DDD" stroke-width="0.6"/>
+  <line x1="25" y1="29" x2="32" y2="29" stroke="#DDD" stroke-width="0.6"/>
+  <!-- 前脚 -->
+  <ellipse cx="15" cy="53" rx="5" ry="4" fill="#F0F0F0"/>
+  <ellipse cx="27" cy="53" rx="5" ry="4" fill="#F0F0F0"/>
+</svg>`;
+
+// === 状态 ===
+let heads = 10, legs = 28;
+let isAnimating = false;
+let currentAnimals = [];
+
+const stage = document.getElementById('stage');
+const bubbles = document.getElementById('bubbles');
+
+// === 工具函数 ===
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function solve(h, l) {
+    const r = (l - 2 * h) / 2;
+    const c = h - r;
+    if (r < 0 || c < 0 || !Number.isInteger(r) || !Number.isInteger(c)) return null;
+    return { chickens: c, rabbits: r };
+}
+
+// === 动物渲染 ===
+function clearStage() {
+    stage.innerHTML = '';
+    currentAnimals = [];
+}
+
+function addChicken(animate = true) {
+    const el = document.createElement('div');
+    el.className = 'animal-char chicken-char';
+    el.innerHTML = CHICKEN_SVG;
+    el.style.animationDelay = `${Math.random() * 0.5}s`;
+    if (animate) {
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0) translateY(30px)';
+    }
+    stage.appendChild(el);
+    currentAnimals.push({ el, type: 'chicken' });
+    if (animate) {
+        gsap.to(el, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', delay: currentAnimals.length * 0.05 });
+    }
+    return el;
+}
+
+function addRabbit(animate = true) {
+    const el = document.createElement('div');
+    el.className = 'animal-char rabbit-char';
+    el.innerHTML = RABBIT_SVG;
+    el.style.animationDelay = `${Math.random() * 0.5}s`;
+    if (animate) {
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0) translateY(30px)';
+    }
+    stage.appendChild(el);
+    currentAnimals.push({ el, type: 'rabbit' });
+    if (animate) {
+        gsap.to(el, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)', delay: currentAnimals.length * 0.05 });
+    }
+    return el;
+}
+
+const QUESTION_SVG = `<svg width="46" height="55" viewBox="0 0 46 55" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="23" cy="28" rx="18" ry="20" fill="#FFE066" opacity="0.6"/>
+  <ellipse cx="23" cy="28" rx="15" ry="17" fill="#FFF3CC" opacity="0.5"/>
+  <text x="23" y="36" text-anchor="middle" font-size="30" font-weight="bold" fill="#E67E22" font-family="sans-serif">?</text>
+</svg>`;
+
+function addQuestion() {
+    const el = document.createElement('div');
+    el.className = 'animal-char question-char';
+    el.innerHTML = QUESTION_SVG;
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.3)';
+    stage.appendChild(el);
+    currentAnimals.push({ el, type: 'unknown' });
+    gsap.to(el, {
+        opacity: 1, scale: 1, duration: 0.35,
+        ease: 'back.out(1.7)',
+        delay: currentAnimals.length * 0.06
+    });
+    return el;
+}
+
+// === 气泡系统 ===
+let activeBubbles = [];
+
+function showBubble(html, opts = {}) {
+    const { pos = 'top', duration = 0, big = false } = opts;
+    const bubble = document.createElement('div');
+    bubble.className = `speech-bubble ${pos}-bubble`;
+    bubble.innerHTML = html;
+    if (big) bubble.style.fontSize = '1.3rem';
+    bubbles.appendChild(bubble);
+    activeBubbles.push(bubble);
+
+    return new Promise(resolve => {
+        requestAnimationFrame(() => {
+            gsap.to(bubble, {
+                opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.5)',
+                onComplete: () => {
+                    if (duration > 0) {
+                        setTimeout(() => {
+                            gsap.to(bubble, { opacity: 0, scale: 0.8, duration: 0.25, onComplete: () => { bubble.remove(); resolve(); } });
+                        }, duration);
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    });
+}
+
+function clearBubbles() {
+    activeBubbles.forEach(b => b.remove());
+    activeBubbles = [];
+}
+
+// === 烟雾效果 ===
+function poofAt(el) {
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 8; i++) {
+        const p = document.createElement('div');
+        p.className = 'poof-particle';
+        p.style.left = cx + 'px';
+        p.style.top = cy + 'px';
+        const size = 10 + Math.random() * 15;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        document.body.appendChild(p);
+
+        const angle = (i / 8) * Math.PI * 2;
+        const dist = 20 + Math.random() * 25;
+        gsap.fromTo(p, { opacity: 0.8, scale: 0.5 }, {
+            x: Math.cos(angle) * dist,
+            y: Math.sin(angle) * dist,
+            opacity: 0, scale: 1.5,
+            duration: 0.5 + Math.random() * 0.2,
+            ease: 'power2.out',
+            onComplete: () => p.remove()
+        });
+    }
+}
+
+// === 浮动数字 ===
+function floatNumber(text, el, color = '#E74C3C') {
+    const rect = el.getBoundingClientRect();
+    const num = document.createElement('div');
+    num.className = 'float-num';
+    num.textContent = text;
+    num.style.color = color;
+    num.style.left = (rect.left + rect.width / 2) + 'px';
+    num.style.top = (rect.top - 10) + 'px';
+    document.body.appendChild(num);
+
+    gsap.fromTo(num, { opacity: 1, y: 0 }, {
+        y: -40, opacity: 0, duration: 1, ease: 'power2.out',
+        onComplete: () => num.remove()
+    });
+}
+
+// === 脚数指示器 ===
+function showLegsHud(cur, target) {
+    const hud = document.getElementById('legs-hud');
+    hud.style.display = 'block';
+    document.getElementById('legs-cur').textContent = cur;
+    document.getElementById('legs-tgt').textContent = target;
+    const valEl = document.getElementById('legs-cur');
+    valEl.style.color = cur === target ? '#2ECC71' : '#E74C3C';
+    gsap.fromTo(valEl, { scale: 1.3 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+}
+function hideLegsHud() { document.getElementById('legs-hud').style.display = 'none'; }
+
+// === 替换动画 ===
+async function replaceWithRabbit(index) {
+    const animal = currentAnimals[index];
+    const el = animal.el;
+
+    // Squash准备
+    gsap.to(el, { scaleY: 0.7, scaleX: 1.3, duration: 0.1 });
+    await delay(100);
+
+    // 烟雾+消失
+    poofAt(el);
+    gsap.to(el, { opacity: 0, scale: 0, duration: 0.2 });
+    await delay(250);
+
+    // 替换为兔子
+    el.className = 'animal-char rabbit-char';
+    el.innerHTML = RABBIT_SVG;
+    el.style.animationDelay = `${Math.random() * 0.5}s`;
+    currentAnimals[index].type = 'rabbit';
+
+    // 从上方弹入
+    gsap.fromTo(el,
+        { opacity: 0, scale: 0.3, y: -30 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'bounce.out' }
+    );
+    await delay(200);
+
+
+    floatNumber('+2', el, '#2ECC71');
+}
+
+// === 庆祝 ===
+function celebrate() {
+    const layer = document.getElementById('confetti');
+    const colors = ['#FF6B6B','#4ECDC4','#FFE66D','#FF8E53','#A8E6CF','#DDA0DD','#74b9ff'];
+    for (let i = 0; i < 80; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.left = (Math.random() * 100) + '%';
+        piece.style.top = '-10px';
+        piece.style.transform = `rotate(${Math.random()*360}deg)`;
+        layer.appendChild(piece);
+        gsap.to(piece, {
+            y: window.innerHeight + 50,
+            x: (Math.random() - 0.5) * 200,
+            rotation: Math.random() * 720,
+            opacity: 0,
+            duration: 2 + Math.random() * 1.5,
+            ease: 'power1.out',
+            delay: Math.random() * 0.5,
+            onComplete: () => piece.remove()
+        });
+    }
+}
+
+// === 主解题动画 ===
+async function runSolve() {
+    if (isAnimating) return;
+    isAnimating = true;
+    document.getElementById('play-btn').disabled = true;
+    document.getElementById('game-hud').classList.add('hidden');
+    document.getElementById('reset-hud').style.display = 'block';
+
+    AudioManager.init();
+    AudioManager.startBGM();
+
+    const result = solve(heads, legs);
+    if (!result) {
+        await showBubble(`<span class="highlight">无解！</span><br>请调整参数再试试`, { pos: 'center', duration: 2000 });
+        resetAll();
+        return;
+    }
+
+    const extra = legs - heads * 2;
+    clearStage();
+    clearBubbles();
+
+    // === 场景1: 出题 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`<span class="title-text">鸡兔同笼</span><br><span class="sub-text">经典趣味挑战</span>`, { pos: 'top', big: true });
+    await AudioManager.speak('01_title');
+    await delay(500);
+    clearBubbles();
+
+    AudioManager.playSfx('pop');
+    await showBubble(`笼子里有 <span class="highlight">${heads} 个头</span>，<span class="highlight">${legs} 只脚</span><br>鸡有2只脚，兔有4只脚<br>各有多少只呢？`, { pos: 'top' });
+    for (let i = 0; i < heads; i++) addQuestion();
+    await AudioManager.speak('02_question');
+    await delay(500);
+    clearBubbles();
+
+    // === 场景2: 假设全是鸡 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`<b>假设法</b>：先假设全是鸡！`, { pos: 'top' });
+    await AudioManager.speak('03_assume');
+    clearStage();
+    for (let i = 0; i < heads; i++) addChicken();
+    showLegsHud(heads * 2, legs);
+    await delay(1000);
+    clearBubbles();
+
+    // === 场景3: 数脚 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`如果全是鸡：<br><span class="formula">${heads} × 2 = ${heads * 2} 只脚</span><br>但实际有 <span class="highlight">${legs} 只脚</span><br>多了 <span class="highlight">${extra} 只脚</span>！`, { pos: 'top' });
+    await AudioManager.speak('04_count');
+    await delay(500);
+    clearBubbles();
+
+    // === 场景4: 关键推理 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`每把1只鸡换成兔子<br>脚就 <span class="accent">+2</span>（因为 4−2=2）<br>需要替换：<span class="formula">${extra} ÷ 2 = ${result.rabbits} 只</span>`, { pos: 'top' });
+    await AudioManager.speak('05_reason');
+    await delay(500);
+    clearBubbles();
+
+    // === 场景5: 逐个替换 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`<b>变身！</b>`, { pos: 'top', duration: 1200 });
+    await AudioManager.speak('06_transform');
+
+    let curLegs = heads * 2;
+    for (let i = 0; i < result.rabbits; i++) {
+        const idx = currentAnimals.length - 1 - i;
+        AudioManager.playSfx('whoosh');
+        await replaceWithRabbit(idx);
+        curLegs += 2;
+        AudioManager.playSfx('ding');
+        showLegsHud(curLegs, legs);
+        await delay(400);
+    }
+    await delay(800);
+    clearBubbles();
+
+    // === 场景6: 结果 ===
+    AudioManager.playSfx('tada');
+    await showBubble(`<b>答案揭晓！</b><br>鸡 = <span class="highlight">${result.chickens} 只</span> &nbsp; 兔 = <span class="accent">${result.rabbits} 只</span>`, { pos: 'top', big: true });
+    celebrate();
+    await AudioManager.speak('07_result');
+    await delay(1000);
+    clearBubbles();
+
+    // === 场景7: 验证 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`<b>验证一下</b><br>头：${result.chickens}+${result.rabbits} = ${heads} ✓<br>脚：${result.chickens}×2+${result.rabbits}×4 = ${legs} ✓`, { pos: 'top' });
+    await AudioManager.speak('08_verify');
+    await delay(500);
+    clearBubbles();
+
+    // === 场景8: 总结公式 ===
+    AudioManager.playSfx('pop');
+    await showBubble(`<b>解法总结</b><br><span class="formula">兔 = (脚数 − 头数×2) ÷ 2</span><br><span class="formula">鸡 = 头数 − 兔数</span><br><br>口诀：多出的脚÷2 = 兔子数`, { pos: 'center' });
+    await AudioManager.speak('09_summary');
+
+    await delay(3000);
+    AudioManager.stopBGM();
+
+    isAnimating = false;
+    document.getElementById('play-btn').disabled = false;
+}
+
+// === 重置 ===
+function resetAll() {
+    isAnimating = false;
+    AudioManager.stopNarration();
+    AudioManager.stopBGM();
+    document.getElementById('play-btn').disabled = false;
+    document.getElementById('game-hud').classList.remove('hidden');
+    document.getElementById('reset-hud').style.display = 'none';
+    hideLegsHud();
+    clearBubbles();
+    clearStage();
+    showInitial();
+}
+
+// === 初始画面 ===
+function showInitial() {
+    clearStage();
+    clearBubbles();
+    showBubble(`<span class="title-text">鸡兔同笼</span><br>笼中有 <span class="highlight">${heads} 个头</span>，<span class="highlight">${legs} 只脚</span><br><span class="sub-text">调整参数，点击「开始」</span>`, { pos: 'center' });
+    for (let i = 0; i < Math.min(heads, 12); i++) addQuestion();
+}
+
+// === HUD 事件 ===
+document.getElementById('h-minus').onclick = () => { AudioManager.init(); AudioManager.playSfx('click'); if (heads > 2 && !isAnimating) { heads--; syncHUD(); } };
+document.getElementById('h-plus').onclick = () => { AudioManager.init(); AudioManager.playSfx('click'); if (heads < 20 && !isAnimating) { heads++; syncHUD(); } };
+document.getElementById('l-minus').onclick = () => { AudioManager.init(); AudioManager.playSfx('click'); if (legs > heads*2 && !isAnimating) { legs -= 2; syncHUD(); } };
+document.getElementById('l-plus').onclick = () => { AudioManager.init(); AudioManager.playSfx('click'); if (legs < heads*4 && !isAnimating) { legs += 2; syncHUD(); } };
+document.getElementById('play-btn').onclick = () => { AudioManager.init(); AudioManager.playSfx('click'); runSolve(); };
+document.getElementById('reset-btn').onclick = () => { AudioManager.init(); AudioManager.playSfx('click'); resetAll(); };
+
+function syncHUD() {
+    if (legs < heads * 2) legs = heads * 2;
+    if (legs > heads * 4) legs = heads * 4;
+    if (legs % 2 !== 0) legs--;
+    document.getElementById('h-val').textContent = heads;
+    document.getElementById('l-val').textContent = legs;
+    showInitial();
+}
+
+// === 栅栏生成 ===
+function buildFence() {
+    const fence = document.getElementById('fence');
+    const w = fence.offsetWidth;
+    const posts = Math.floor(w / 30);
+    // 保留横栏
+    const rails = fence.querySelectorAll('.fence-rail');
+    fence.innerHTML = '';
+    rails.forEach(r => fence.appendChild(r));
+    for (let i = 0; i < posts; i++) {
+        const post = document.createElement('div');
+        post.className = 'fence-post';
+        fence.appendChild(post);
+    }
+}
+
+// === 初始化 ===
+buildFence();
+showInitial();
+</script>
+</body>
+</html>
